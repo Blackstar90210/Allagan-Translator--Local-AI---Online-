@@ -1,5 +1,6 @@
 # Allagan Translator (Local AI & Online) 🌍
 *A seamless, hybrid translation plugin for Final Fantasy XIV (via Dalamud).*
+*Built with the support of Antigravity IDE.*
 
 [🇮🇹 Leggi in Italiano](#italiano)
 
@@ -37,6 +38,7 @@ Welcome to **Allagan Translator (Local AI & Online)**, the ultimate translation 
 
 # Allagan Translator (Local AI & Online) 🌍
 *Un plugin di traduzione ibrido e integrato per Final Fantasy XIV (tramite Dalamud).*
+*Creato con il supporto di Antigravity IDE.*
 
 Benvenuto in **Allagan Translator (Local AI & Online)**, l'overlay di traduzione definitivo per FFXIV. Che tu stia giocando su server internazionali o semplicemente desideri goderti la trama nella tua lingua madre, questo plugin offre traduzioni istantanee e super-contestualizzate direttamente a schermo.
 
