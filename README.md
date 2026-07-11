@@ -17,10 +17,20 @@ Welcome to **Allagan Translator (Local AI & Online)**, the ultimate translation 
 * **Immersive Overlay:** A clean, draggable ImGui overlay that mirrors the native game chat colors. Sender names are brilliantly highlighted so you can effortlessly keep track of who is talking during fast-paced cutscenes.
 
 ## 🚀 How to Use
-1. Install via the Dalamud Plugin Installer (or manually place the build in your `%appdata%\XIVLauncher\installedPlugins` folder).
-2. Type `/translator` in the game chat to open the Configuration Menu.
-3. Choose your target language and preferred engine.
-4. Enjoy the MSQ in your language!
+
+### Installation
+1. Open **FFXIV** and open the Dalamud Settings by typing `/xlsettings` in chat.
+2. Go to the **Experimental** tab.
+3. Scroll down to **Custom Plugin Repositories** and paste the following link:
+   `https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator-Local-AI-Online-/main/pluginmaster.json`
+4. Click the **+** button to add it, then click **Save and Close**.
+5. Open the Dalamud Plugin Installer, search for **Allagan Translator (Local AI & Online)** and click Install.
+
+### Usage
+1. Type `/translator` in the game chat to open the Configuration Menu.
+2. Choose your target language and preferred engine.
+   * *Note: If you select **Llama 3.2 3B**, the plugin will automatically start downloading the model (~2GB) in the background. The translation overlay will notify you when the download is complete and the AI is ready to use!*
+3. Enjoy the MSQ in your language!
 
 ---
 <a name="italiano"></a>
@@ -42,7 +52,17 @@ Benvenuto in **Allagan Translator (Local AI & Online)**, l'overlay di traduzione
 * **Overlay Immersivo:** Un riquadro grafico pulito che rispetta fedelmente i colori nativi della chat di gioco. I nomi dei mittenti vengono isolati ed evidenziati in bianco brillante, permettendoti di seguire i dialoghi frenetici con un solo colpo d'occhio.
 
 ## 🚀 Come si usa
-1. Installa tramite il Plugin Installer di Dalamud (o inserisci la build manualmente nella cartella `%appdata%\XIVLauncher\installedPlugins`).
-2. Scrivi `/translator` nella chat di gioco per aprire il Menu di Configurazione.
-3. Scegli la tua lingua di destinazione e il motore che preferisci.
-4. Goditi la trama di FFXIV nella tua lingua!
+
+### Installazione
+1. Avvia **FFXIV** e apri le Impostazioni di Dalamud scrivendo `/xlsettings` in chat.
+2. Vai nella scheda **Experimental**.
+3. Scorri fino a **Custom Plugin Repositories** e incolla questo link:
+   `https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator-Local-AI-Online-/main/pluginmaster.json`
+4. Clicca il tasto **+** per aggiungerlo, poi fai clic su **Save and Close**.
+5. Apri il Plugin Installer di Dalamud, cerca **Allagan Translator (Local AI & Online)** e installalo.
+
+### Utilizzo
+1. Scrivi `/translator` nella chat di gioco per aprire il Menu di Configurazione.
+2. Scegli la tua lingua di destinazione e il motore che preferisci.
+   * *Nota: Se selezioni **Llama 3.2 3B**, il plugin avvierà automaticamente il download del modello (~2GB) in background. L'overlay delle traduzioni ti avviserà non appena il download sarà completato e l'IA sarà pronta all'uso!*
+3. Goditi la trama di FFXIV nella tua lingua!
