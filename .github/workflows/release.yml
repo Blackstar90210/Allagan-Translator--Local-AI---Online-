@@ -20,4 +20,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: latest.zip
-          generate_release_notes: true # Genera in automatico una lista dei commit dal rilascio precedente
+          body_path: RELEASE_NOTES.md # Legge il testo da questo file per compilare il changelog
