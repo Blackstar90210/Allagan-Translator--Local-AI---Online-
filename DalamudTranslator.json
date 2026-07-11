@@ -15,5 +15,6 @@
   "LoadRequiredState": 0,
   "LoadSync": false,
   "LoadBehavior": 0,
-  "Punchline": "Translate FFXIV natively and offline!"
+  "Punchline": "Translate FFXIV natively and offline!",
+  "IconUrl": "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/icon.png"
 }
