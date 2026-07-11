@@ -4,7 +4,7 @@
         "Name":  "Allagan Translator (Local AI \u0026 Online)",
         "InternalName":  "DalamudTranslator",
         "AssemblyVersion":  "1.0.0.1",
-        "TestingAssemblyVersion":  "1.0.0.3",
+        "TestingAssemblyVersion":  "1.0.0.4",
         "Description":  "Offline translation plugin directly inside FFXIV.",
         "ApplicableVersion":  "any",
         "Tags":  [
@@ -24,6 +24,6 @@
         "DownloadLinkInstall":  "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/latest.zip",
         "DownloadLinkTesting":  "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/latest_test.zip",
         "DownloadLinkUpdate":  "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/latest.zip",
-        "IconUrl":  "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/icon_v2.png"
+        "IconUrl":  "https://raw.githubusercontent.com/Blackstar90210/Allagan-Translator--Local-AI---Online-/main/icon.png"
     }
 ]
