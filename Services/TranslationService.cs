@@ -13,6 +13,7 @@ using Lumina.Excel.Sheets;
 using LLama;
 using LLama.Common;
 using LLama.Native;
+using System.Text.RegularExpressions;
 
 namespace DalamudTranslator.Services
 {
@@ -196,9 +197,8 @@ namespace DalamudTranslator.Services
                 using var client = new HttpClient();
                 using var response = await client.GetAsync(ModelUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
-
-                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                var canReportProgress = totalBytes != -1;
+                var totalBytes = response.Content.Headers.ContentLength ?? 2142277888L; // Fallback size for Llama 3.2 3B Q4_K_M (approx 2.14GB)
+                var canReportProgress = true;
 
                 using var contentStream = await response.Content.ReadAsStreamAsync();
                 using var fileStream = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
@@ -262,21 +262,40 @@ namespace DalamudTranslator.Services
                 {
                     this.log.Information($"[TranslationService] Traduzione reale in corso per: {msg.Text}");
                     
-                    var foundLumina = this.luminaContextTerms.Where(t => msg.Text.Contains(t, StringComparison.OrdinalIgnoreCase)).ToList();
-                    var customGlossaryRules = this.configuration.CustomGlossary.Where(kvp => msg.Text.Contains(kvp.Key, StringComparison.OrdinalIgnoreCase)).ToList();
+                    var placeholders = new Dictionary<string, string>();
+                    int pIndex = 0;
+                    string textToTranslate = msg.Text;
 
-                    string glossaryInstructions = "";
-                    
-                    if (foundLumina.Count > 0)
+                    // Estrae gli URL
+                    var urlRegex = new Regex(@"(http[s]?://\S+|www\.\S+|\w+\.\w+/\S+)", RegexOptions.IgnoreCase);
+                    textToTranslate = urlRegex.Replace(textToTranslate, m => {
+                        string ph = $"___PH{pIndex++}___";
+                        placeholders[ph] = m.Value;
+                        return ph;
+                    });
+
+                    // Estrae il glossario
+                    var customGlossaryRules = this.configuration.CustomGlossary.ToList();
+                    foreach (var rule in customGlossaryRules)
                     {
-                        var luminaStr = string.Join(", ", foundLumina.Select(t => $"'{t}'"));
-                        glossaryInstructions += $"\nCRITICAL INSTRUCTION: You MUST keep the following FFXIV proper nouns EXACTLY in English, do not translate them: {luminaStr}.";
+                        var regex = new Regex($@"\b{Regex.Escape(rule.Key)}\b", RegexOptions.IgnoreCase);
+                        textToTranslate = regex.Replace(textToTranslate, m => {
+                            string ph = $"___PH{pIndex++}___";
+                            placeholders[ph] = rule.Value; // Valore target da forzare
+                            return ph;
+                        });
                     }
-                    
-                    if (customGlossaryRules.Count > 0)
+
+                    // Estrae i termini Lumina (solo se Llama, in realtà per sicurezza lo facciamo per tutti)
+                    var foundLumina = this.luminaContextTerms.Where(t => textToTranslate.Contains(t, StringComparison.OrdinalIgnoreCase)).ToList();
+                    foreach (var term in foundLumina)
                     {
-                        var rulesStr = string.Join(", ", customGlossaryRules.Select(r => $"'{r.Key}' = '{r.Value}'"));
-                        glossaryInstructions += $"\nCRITICAL INSTRUCTION: You MUST use these exact Italian translations for these terms: {rulesStr}.";
+                        var regex = new Regex($@"\b{Regex.Escape(term)}\b", RegexOptions.IgnoreCase);
+                        textToTranslate = regex.Replace(textToTranslate, m => {
+                            string ph = $"___PH{pIndex++}___";
+                            placeholders[ph] = m.Value; // Termine originale inglese
+                            return ph;
+                        });
                     }
 
                     if (this.translationCache.TryGetValue(msg.Text, out var cachedText))
@@ -293,7 +312,7 @@ namespace DalamudTranslator.Services
                         try
                         {
                             var targetLang = this.configuration.TargetLanguage;
-                            var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl={targetLang}&dt=t&q={Uri.EscapeDataString(msg.Text)}";
+                            var url = $"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl={targetLang}&dt=t&q={Uri.EscapeDataString(textToTranslate)}";
                             var response = await this.httpClient.GetStringAsync(url);
                             var json = JArray.Parse(response);
                             
@@ -301,13 +320,6 @@ namespace DalamudTranslator.Services
                             foreach (var item in json[0])
                             {
                                 translatedText += item[0].ToString();
-                            }
-
-                            // Google sometimes translates the Glossary rules if we don't manually apply them post-translation (or pre-translation).
-                            // A simple post-translation replace for the custom glossary:
-                            foreach (var rule in customGlossaryRules)
-                            {
-                                translatedText = translatedText.Replace(rule.Key, rule.Value, StringComparison.OrdinalIgnoreCase);
                             }
 
                             await Task.Delay(300); // Previene HTTP 429 (Too Many Requests)
@@ -327,13 +339,21 @@ namespace DalamudTranslator.Services
                         }
                         
                         // Llama 3 Format
-                        var prompt = $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a professional localization translator for Final Fantasy XIV. Translate the following text into Italian. Output only the Italian translation, nothing else.{glossaryInstructions}<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{msg.Text}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n";
+                        var prompt = $"<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are a professional localization translator for Final Fantasy XIV. Translate the following text into Italian. Output only the Italian translation, nothing else.<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n{textToTranslate}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n";
                         var inferenceParams = new InferenceParams() { MaxTokens = 256, AntiPrompts = new List<string> { "<|eot_id|>" } };
 
                         await foreach (var token in this.executor.InferAsync(prompt, inferenceParams, this.cancellationTokenSource.Token))
                         {
                             translatedText += token;
                         }
+                    }
+
+                    // Reinserisce i placeholder (sia per Llama che per Google)
+                    // Google a volte aggiunge spazi come ___ PH0 ___
+                    translatedText = Regex.Replace(translatedText, @"___\s*PH(\d+)\s*___", "___PH$1___");
+                    foreach (var kvp in placeholders)
+                    {
+                        translatedText = translatedText.Replace(kvp.Key, kvp.Value);
                     }
 
                     // Ripulisce eventuali sbavature del modello e font non supportati da ImGui
